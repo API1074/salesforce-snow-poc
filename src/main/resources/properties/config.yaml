@@ -1,0 +1,26 @@
+http: 
+  port: "8081"
+  
+file:
+  accountDir: "${mule.home}/apps/snow-trial/Files/" 
+
+sfdc:
+  username: "sonishreyas10@gmail.com"
+  password: "Shreyas@123"
+  token: "ApXUJ2TZJByrnHcVTFEgOdzXH"
+  
+snow:
+  account: "bg65375.us-central1.gcp"
+  warehouse: "COMPUTE_WH"
+  database: "TRIALSNOW"
+  scheme: "SNOWTRIAL"
+  user: "SHREYASSONI"
+  password: "Shreyas@123"
+  role: "SYSADMIN"
+
+query:
+  select: "select id__c,name__c,project__c from trial_sales__c"
+  select_name: "select name__c from trial_sales__c"
+  select_project: "select project__c from trial_sales__c"
+  
+  

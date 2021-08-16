@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:snowflake="http://www.mulesoft.org/schema/mule/snowflake"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mule/snowflake/current/mule-snowflake.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="60bd9e7a-6f4e-48ea-b102-8235e20113ff" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="bc4ea14e-9ffd-4a39-a4d4-78d8de4654de" file="properties\config.yaml" />
+	<file:config name="File_Config" doc:name="File Config" doc:id="4805c055-374b-489d-86c4-4edf6ad79c36" >
+		<file:connection workingDir="${file.accountDir}" />
+	</file:config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="919063e4-be64-4f5f-85f3-3707cb01d7c4" >
+		<salesforce:basic-connection username="${sfdc.username}" password="${sfdc.password}" securityToken="${sfdc.token}"/>
+	</salesforce:sfdc-config>
+	<snowflake:snowflake-config name="Snowflake_Config" doc:name="Snowflake Config" doc:id="ed648001-1694-4545-a52b-7639a338c90b" >
+		<snowflake:snowflake-connection accountName="${snow.account}" warehouse="${snow.warehouse}" database="${snow.database}" schema="${snow.scheme}" user="${snow.user}" password="${snow.password}"/>
+	</snowflake:snowflake-config>
+
+</mule>

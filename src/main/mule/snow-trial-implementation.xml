@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:snowflake="http://www.mulesoft.org/schema/mule/snowflake" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mule/snowflake/current/mule-snowflake.xsd">
+	<flow name="SalesforceQuery" doc:id="316db174-333d-49ce-8394-582d61f493a2" >
+		<http:listener doc:name="Listener" doc:id="ce984589-0aba-4a92-a2ab-9da9ac41a174" config-ref="HTTP_Listener_config" path="/select"/>
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;attributes.queryParams.query as String]" doc:name="param" doc:id="d6149ae6-7837-4ee4-96af-c9b1745bab57" variableName="param"/>
+		<file:read doc:id="8537bceb-0382-42cb-b1cd-058f8e1ca080" config-ref="File_Config" path="input/input_sales.json" doc:name="Read" />
+		<ee:transform doc:name="Transform Message" doc:id="edb0f642-a1c4-4a12-aa93-4ebfa7b95fbe">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+var q = vars.param
+output application/json
+---
+payload[q]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:query doc:id="4c0ae3b8-26d3-413d-bd5d-8b56b4d6fe3c" config-ref="Salesforce_Config" doc:name="Query" >
+			<salesforce:salesforce-query ><![CDATA[:query]]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	"query" : payload
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="0acbc96b-bc38-4346-9639-cba4ddef84b9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="770688b7-f139-4eed-8e1c-4d59da204f57" message="payload" />
+	</flow>
+	<flow name="SnowflakeQuery" doc:id="a6b20a4c-f93c-401b-8ef8-30c853608428">
+		<http:listener doc:name="Listener" doc:id="dea8bdd1-4074-4797-9887-25409068fd85" config-ref="HTTP_Listener_config" path="/select_snow" />
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;attributes.queryParams.query as String]" doc:name="param" doc:id="2ef7104d-17c5-40f0-aad8-d508f0dfe7f2" variableName="param"/>
+		<file:read doc:id="bc9c1544-fb52-4ff3-b1cd-b2308365ef22" config-ref="File_Config" path="input/input_snow.json" doc:name="Read" />
+		<ee:transform doc:name="Transform Message" doc:id="316d1a83-75ac-43b1-bed0-35e5d9766588" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+var q = vars.param
+output application/json
+---
+payload[q]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<snowflake:select doc:id="99e0166e-a557-4420-b9d5-4fa48cb34b68" config-ref="Snowflake_Config" doc:name="Select" >
+			<snowflake:sql ><![CDATA[#[payload]]]></snowflake:sql>
+		</snowflake:select>
+		<ee:transform doc:name="Transform Message" doc:id="51386a82-a08d-48e8-bf62-2f66a04601f2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="24432854-fefc-45ec-a018-31c9da0bbf84" message="payload" />
+	</flow>
+</mule>
